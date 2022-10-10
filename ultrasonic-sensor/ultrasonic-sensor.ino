@@ -1,3 +1,5 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 int trigPin = 3;  // Trigger
 int echoPin = 2;  // Echo
 const int bluePin = 7;
@@ -6,6 +8,12 @@ const int redPin = 11;
 long duration, cm, inches;
 
 void setup() {
+
+  // lcd init
+  lcd.init();
+  lcd.clear();
+  lcd.backlight();
+
   //Serial Port begin
   Serial.begin(9600);
   //Define inputs and outputs
@@ -37,11 +45,19 @@ void loop() {
   cm = (duration / 2) / 29.1;    // Divide by 29.1 or multiply by 0.0343
   inches = (duration / 2) / 74;  // Divide by 74 or multiply by 0.0135
 
-  Serial.print(inches);
-  Serial.print("in, ");
-  Serial.print(cm);
-  Serial.print("cm");
-  Serial.println();
+  // Serial.print(inches);
+  // Serial.print("in, ");
+  // Serial.print(cm);
+  // Serial.print("cm");
+  // Serial.println();
+
+  // print with LCD
+  lcd.setCursor(2, 0);
+  lcd.println("the distance: ");
+  lcd.setCursor(2, 1);  //Move cursor to character 2 on line 1
+  lcd.print(cm);
+  lcd.print(" cm");
+
 
   if (cm < 5) {
     digitalWrite(redPin, HIGH);
@@ -57,5 +73,5 @@ void loop() {
     digitalWrite(bluePin, LOW);
   }
 
-  delay(250);
+  delay(1000);
 }
