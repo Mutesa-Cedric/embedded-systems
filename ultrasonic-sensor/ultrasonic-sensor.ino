@@ -1,22 +1,9 @@
-/*
- * created by Rui Santos, https://randomnerdtutorials.com
- * 
- * Complete Guide for Ultrasonic Sensor HC-SR04
- *
-    Ultrasonic sensor Pins:
-        VCC: +5VDC
-        Trig : Trigger (INPUT) - Pin11
-        Echo: Echo (OUTPUT) - Pin 12
-        GND: GND
- */
-
-int trigPin = 11;  // Trigger
-int echoPin = 12;  // Echo
-long cm, inches;
-float duration, time;
-const int soundSpeed = 343;
-float obstacleDistance;
-
+int trigPin = 3;  // Trigger
+int echoPin = 2;  // Echo
+const int bluePin = 7;
+const int greenPin = 9;
+const int redPin = 11;
+long duration, cm, inches;
 
 void setup() {
   //Serial Port begin
@@ -39,25 +26,36 @@ void loop() {
   // duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
   pinMode(echoPin, INPUT);
-  duration = pulseIn(echoPin, HIGH);
-  time = duration / 2000000;
+  pinMode(trigPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+  pinMode(redPin, OUTPUT);
 
-  obstacleDistance = soundSpeed * time;
-  Serial.print("obstacle distance in cm: ");
-  Serial.print(obstacleDistance * 100);
+  duration = pulseIn(echoPin, HIGH);
+
+  // Convert the time into a distance
+  cm = (duration / 2) / 29.1;    // Divide by 29.1 or multiply by 0.0343
+  inches = (duration / 2) / 74;  // Divide by 74 or multiply by 0.0135
+
+  Serial.print(inches);
+  Serial.print("in, ");
+  Serial.print(cm);
+  Serial.print("cm");
   Serial.println();
-  if (obstacleDistance < 20.00) {
-    digitalWrite(8, HIGH);
-    digitalWrite(6, LOW);
-    digitalWrite(3, LOW);
-  } else if (obstacleDistance >= 20.00 && obstacleDistance <= 40.00) {
-    digitalWrite(8, LOW);
-    digitalWrite(6, HIGH);
-    digitalWrite(3, LOW);
+
+  if (cm < 5) {
+    digitalWrite(redPin, HIGH);
+    digitalWrite(bluePin, LOW);
+    digitalWrite(greenPin, LOW);
+  } else if (cm >= 5 && cm < 20) {
+    digitalWrite(bluePin, HIGH);
+    digitalWrite(redPin, LOW);
+    digitalWrite(greenPin, LOW);
   } else {
-    digitalWrite(8, LOW);
-    digitalWrite(6, LOW);
-    digitalWrite(3, HIGH);
+    digitalWrite(greenPin, HIGH);
+    digitalWrite(redPin, LOW);
+    digitalWrite(bluePin, LOW);
   }
-  delay(1000);
+
+  delay(250);
 }
